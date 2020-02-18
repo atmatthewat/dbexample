@@ -2,7 +2,7 @@ package at.matthew.dbexample;
 
 import java.util.Scanner;
 
-public class Main {
+class Main {
     private static final String searchPattern = "[^\"\\s]+|\"(\\\\.|[^\\\\\"])*\"";   // find unquoted or quoted (including escaped) tokens
     private static final String stripPattern = "^\"|\"$";   // find leading or trailing quote
 
@@ -12,6 +12,7 @@ public class Main {
         DB db = new DB();
 
         // process commands forever...
+        //noinspection InfiniteLoopStatement
         while (true) {
             String inputString = System.console().readLine();
             Scanner scanner = new Scanner(inputString);
@@ -75,7 +76,8 @@ public class Main {
                         }
                         break;
                     case "commit":
-                        db.commit();
+                        if (!db.commit())
+                            System.err.println("unable to commit, not in transaction");
                         break;
                     default:
                         System.out.println("CMD [key [value]] where CMD is one of GET, SET, UNSET, EXISTS, BEGIN, ROLLBACK, COMMIT");

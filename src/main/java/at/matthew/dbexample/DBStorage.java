@@ -3,7 +3,7 @@ package at.matthew.dbexample;
 import java.util.HashMap;
 
 public class DBStorage implements DBQuery, DBMutate {
-    private HashMap<String, String> storage;
+    private final HashMap<String, String> storage;
 
     public DBStorage() {
         storage = new HashMap<>();

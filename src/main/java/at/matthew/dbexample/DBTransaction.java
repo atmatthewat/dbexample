@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 
 public class DBTransaction implements DBQuery, DBMutate {
-    private ArrayDeque<DBMutation> mutations;
+    private final ArrayDeque<DBMutation> mutations;
 
     public DBTransaction() {
         mutations = new ArrayDeque<>();
@@ -50,7 +50,7 @@ public class DBTransaction implements DBQuery, DBMutate {
     }
 
     @Override
-    public String get(String key) {
+    public String get(String key) throws UnsupportedOperationException {
         Iterator<DBMutation> itr = mutations.descendingIterator();  // newest first
 
         while (itr.hasNext()) {
@@ -61,17 +61,15 @@ public class DBTransaction implements DBQuery, DBMutate {
                         return mutation.getValue();
                     case UNSET:
                         return null;
-                    default:
-                        return null;
                 }
             }
         }
 
-        return null;
+        throw new UnsupportedOperationException("get called on transaction when knowsStateOf false");
     }
 
     @Override
-    public boolean exists(String key) {
+    public boolean exists(String key) throws UnsupportedOperationException {
         Iterator<DBMutation> itr = mutations.descendingIterator();  // newest first
 
         while (itr.hasNext()) {
@@ -82,11 +80,9 @@ public class DBTransaction implements DBQuery, DBMutate {
                         return true;
                     case UNSET:
                         return false;
-                    default:
-                        return false;
                 }
             }
         }
-        return false;
+        throw new UnsupportedOperationException("exists called on transaction when knowsStateOf false");
     }
 }

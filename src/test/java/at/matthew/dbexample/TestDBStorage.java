@@ -1,4 +1,5 @@
-import at.matthew.dbexample.DBStorage;
+package at.matthew.dbexample;
+
 import org.junit.Before;
 import org.junit.Test;
 

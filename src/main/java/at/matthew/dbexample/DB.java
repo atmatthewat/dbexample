@@ -2,10 +2,10 @@ package at.matthew.dbexample;
 
 import java.util.ArrayDeque;
 
-public class DB {
+class DB {
 
-    private DBStorage storage;
-    private ArrayDeque<DBTransaction> transactions;
+    private final DBStorage storage;
+    private final ArrayDeque<DBTransaction> transactions;
 
     public DB() {
         transactions = new ArrayDeque<>();
@@ -57,11 +57,16 @@ public class DB {
         return true;
     }
 
-    public void commit() {
+    public boolean commit() {
+        if (transactions.isEmpty())
+            return false;
+
         DBTransaction thisTransaction = transactions.pop();
         if (transactions.isEmpty())
             thisTransaction.applyMutationsTo(storage);
         else
             thisTransaction.applyMutationsTo(transactions.peek());
+
+        return true;
     }
 }

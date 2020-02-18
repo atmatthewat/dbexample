@@ -1,4 +1,5 @@
-import at.matthew.dbexample.DBTransaction;
+package at.matthew.dbexample;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,20 +24,20 @@ public class TestDBTransaction {
         assertFalse(transaction.knowsStateOf(unknownKey));    // true for base layer, never for transaction layers
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void checkGet() {
         String unknownKey = "fie";
 
         assertEquals(transaction.get(key0), value0);
-        assertEquals(transaction.get(unknownKey), null);
+        assertNull(transaction.get(unknownKey));    // should throw
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void checkExists() {
         String unknownKey = "fie";
 
         assertTrue(transaction.exists(key0));
-        assertFalse(transaction.exists(unknownKey));
+        assertFalse(transaction.exists(unknownKey));    // should throw
     }
 
     @Test
@@ -44,8 +45,9 @@ public class TestDBTransaction {
         String key = "baz";
         String value = "baa";
 
-        assertFalse(transaction.exists(key));
+        assertFalse(transaction.knowsStateOf(key));
         transaction.set(key, value);
+        assertTrue(transaction.knowsStateOf(key));
         assertTrue(transaction.exists(key));
         assertEquals(transaction.get(key), value);
         transaction.unset(key);
