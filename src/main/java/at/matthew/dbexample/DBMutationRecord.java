@@ -1,11 +1,11 @@
 package at.matthew.dbexample;
 
-class DBMutation {
+class DBMutationRecord {
     private final Operation op;
     private final String key;
     private final String value;
 
-    DBMutation(Operation op, String key, String value) {
+    DBMutationRecord(Operation op, String key, String value) {
         this.op = op;
         this.key = key;
         this.value = value;

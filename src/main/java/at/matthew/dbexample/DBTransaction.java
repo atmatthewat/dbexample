@@ -3,17 +3,17 @@ package at.matthew.dbexample;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 
-public class DBTransaction implements DBQuery, DBMutate {
-    private final ArrayDeque<DBMutation> mutations;
+public class DBTransaction implements DBQueryOperations, DBMutateOperations {
+    private final ArrayDeque<DBMutationRecord> mutations;
 
     public DBTransaction() {
         mutations = new ArrayDeque<>();
     }
 
-    public void applyMutationsTo(DBMutate target)  // commit a transaction to the next level down
+    public void applyMutationsTo(DBMutateOperations target)  // commit a transaction to the next level down
     {
 
-        for (DBMutation mutation : mutations) {
+        for (DBMutationRecord mutation : mutations) {
             switch (mutation.getOp()) {
                 case SET:
                     target.set(mutation.getKey(), mutation.getValue());
@@ -21,28 +21,26 @@ public class DBTransaction implements DBQuery, DBMutate {
                 case UNSET:
                     target.unset(mutation.getKey());
                     break;
-                default:
-                    break;
             }
         }
     }
 
     @Override
     public void set(String key, String value) {
-        DBMutation mutation = new DBMutation(DBMutation.Operation.SET, key, value);
+        DBMutationRecord mutation = new DBMutationRecord(DBMutationRecord.Operation.SET, key, value);
         mutations.add(mutation);
     }
 
     @Override
     public void unset(String key) {
-        DBMutation mutation = new DBMutation(DBMutation.Operation.UNSET, key, null);
+        DBMutationRecord mutation = new DBMutationRecord(DBMutationRecord.Operation.UNSET, key, null);
         mutations.add(mutation);
     }
 
     @Override
     public boolean knowsStateOf(String key) {
 
-        for (DBMutation mutation : mutations) {
+        for (DBMutationRecord mutation : mutations) {
             if (mutation.getKey().equals(key))
                 return true;
         }
@@ -51,10 +49,10 @@ public class DBTransaction implements DBQuery, DBMutate {
 
     @Override
     public String get(String key) throws UnsupportedOperationException {
-        Iterator<DBMutation> itr = mutations.descendingIterator();  // newest first
+        Iterator<DBMutationRecord> itr = mutations.descendingIterator();  // newest first
 
         while (itr.hasNext()) {
-            DBMutation mutation = itr.next();
+            DBMutationRecord mutation = itr.next();
             if (mutation.getKey().equals(key)) {
                 switch (mutation.getOp()) {
                     case SET:
@@ -65,15 +63,15 @@ public class DBTransaction implements DBQuery, DBMutate {
             }
         }
 
-        throw new UnsupportedOperationException("get called on transaction when knowsStateOf false");
+        throw new UnsupportedOperationException("GET called on transaction when knowsStateOf false");
     }
 
     @Override
     public boolean exists(String key) throws UnsupportedOperationException {
-        Iterator<DBMutation> itr = mutations.descendingIterator();  // newest first
+        Iterator<DBMutationRecord> itr = mutations.descendingIterator();  // newest first
 
         while (itr.hasNext()) {
-            DBMutation mutation = itr.next();
+            DBMutationRecord mutation = itr.next();
             if (mutation.getKey().equals(key)) {
                 switch (mutation.getOp()) {
                     case SET:
@@ -83,6 +81,6 @@ public class DBTransaction implements DBQuery, DBMutate {
                 }
             }
         }
-        throw new UnsupportedOperationException("exists called on transaction when knowsStateOf false");
+        throw new UnsupportedOperationException("EXISTS called on transaction when knowsStateOf false");
     }
 }

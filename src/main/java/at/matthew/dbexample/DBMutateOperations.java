@@ -1,6 +1,6 @@
 package at.matthew.dbexample;
 
-interface DBMutate {
+interface DBMutateOperations {
     void set(String key, String value);
     void unset(String key);
 }
