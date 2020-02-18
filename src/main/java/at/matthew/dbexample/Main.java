@@ -13,7 +13,7 @@ class Main {
         //noinspection InfiniteLoopStatement
         while (true) {
             String inputString = System.console().readLine();
-            ArrayList<String> tokens = tokenizeOptionallyQuoted(inputString);
+            ArrayList<String> tokens = tokenizeOptionallyQuotedStrings(inputString);
             int argc = tokens.size();
 
             if (argc < 1) {
@@ -100,7 +100,7 @@ class Main {
     }
 
 
-    private static ArrayList<String> tokenizeOptionallyQuoted(String input) {
+    private static ArrayList<String> tokenizeOptionallyQuotedStrings(String input) {
         final String searchPattern = "[^\"\\s]+|\"(\\\\.|[^\\\\\"])*\"";   // find unquoted or quoted (including escaped) tokens
         final String stripPattern = "^\"|\"$";   // find leading or trailing quote
 
